@@ -3,6 +3,7 @@ package com.wilb0t.aoc;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.google.common.collect.Lists;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,25 +41,25 @@ public class Day2Test {
 
   @Test
   void testExec_case1() {
-    var code = List.of(1,0,0,0,99);
+    var code = Lists.newArrayList(1, 0, 0, 0, 99);
     assertThat(computer.exec(code), is(List.of(2,0,0,0,99)));
   }
 
   @Test
   void testExec_case2() {
-    var code = List.of(2,3,0,3,99);
+    var code = Lists.newArrayList(2,3,0,3,99);
     assertThat(computer.exec(code), is(List.of(2,3,0,6,99)));
   }
 
   @Test
   void testExec_case3() {
-    var code = List.of(2,4,4,5,99,0);
+    var code = Lists.newArrayList(2,4,4,5,99,0);
     assertThat(computer.exec(code), is(List.of(2,4,4,5,99,9801)));
   }
 
   @Test
   void testExec_case4() {
-    var code = List.of(1,1,1,4,99,5,6,0,99);
+    var code = Lists.newArrayList(1,1,1,4,99,5,6,0,99);
     assertThat(computer.exec(code), is(List.of(30,1,1,4,2,5,6,0,99)));
   }
 
@@ -68,5 +69,10 @@ public class Day2Test {
     code.set(1, 12);
     code.set(2, 2);
     assertThat(computer.exec(code).get(0), is(5434663));
+  }
+
+  @Test
+  void testFindNounVerb() {
+    assertThat(computer.findNounVerb(input1, 19690720), is(4559));
   }
 }
