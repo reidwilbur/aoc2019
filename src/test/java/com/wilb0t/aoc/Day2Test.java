@@ -23,15 +23,14 @@ public class Day2Test {
 
   @BeforeAll
   static void initAll() throws Exception {
-    input1 = Files.readAllLines(
-        Path.of(Day1Test.class.getResource("/Day2_input1.txt").toURI()),
-        StandardCharsets.UTF_8
-    ).stream(
-    ).flatMap(
-        s -> Stream.of(s.split(","))
-    ).map(
-        Integer::parseInt
-    ).collect(Collectors.toList());
+    input1 =
+        Files.readAllLines(
+                Path.of(Day1Test.class.getResource("/Day2_input1.txt").toURI()),
+                StandardCharsets.UTF_8)
+            .stream()
+            .flatMap(s -> Stream.of(s.split(",")))
+            .map(Integer::parseInt)
+            .collect(Collectors.toList());
   }
 
   @BeforeEach
@@ -42,25 +41,25 @@ public class Day2Test {
   @Test
   void testExec_case1() {
     var code = Lists.newArrayList(1, 0, 0, 0, 99);
-    assertThat(computer.exec(code), is(List.of(2,0,0,0,99)));
+    assertThat(computer.exec(code), is(List.of(2, 0, 0, 0, 99)));
   }
 
   @Test
   void testExec_case2() {
-    var code = Lists.newArrayList(2,3,0,3,99);
-    assertThat(computer.exec(code), is(List.of(2,3,0,6,99)));
+    var code = Lists.newArrayList(2, 3, 0, 3, 99);
+    assertThat(computer.exec(code), is(List.of(2, 3, 0, 6, 99)));
   }
 
   @Test
   void testExec_case3() {
-    var code = Lists.newArrayList(2,4,4,5,99,0);
-    assertThat(computer.exec(code), is(List.of(2,4,4,5,99,9801)));
+    var code = Lists.newArrayList(2, 4, 4, 5, 99, 0);
+    assertThat(computer.exec(code), is(List.of(2, 4, 4, 5, 99, 9801)));
   }
 
   @Test
   void testExec_case4() {
-    var code = Lists.newArrayList(1,1,1,4,99,5,6,0,99);
-    assertThat(computer.exec(code), is(List.of(30,1,1,4,2,5,6,0,99)));
+    var code = Lists.newArrayList(1, 1, 1, 4, 99, 5, 6, 0, 99);
+    assertThat(computer.exec(code), is(List.of(30, 1, 1, 4, 2, 5, 6, 0, 99)));
   }
 
   @Test
