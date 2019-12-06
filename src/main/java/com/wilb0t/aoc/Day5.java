@@ -41,17 +41,17 @@ public class Day5 {
     }
 
     Integer in1() {
-      var param = code.get(ip + 1);
+      var param = p1();
       return imm1 ? param : code.get(param);
     }
 
     Integer in2() {
-      var param = code.get(ip + 2);
+      var param = p2();
       return imm2 ? param : code.get(param);
     }
 
     Integer in3() {
-      var param = code.get(ip + 3);
+      var param = p3();
       return imm3 ? param : code.get(param);
     }
   }
