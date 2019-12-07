@@ -3,6 +3,7 @@ package com.wilb0t.aoc;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 
 public class Day5 {
 
@@ -109,6 +110,52 @@ public class Day5 {
         }
       }
       return output;
+    }
+
+    public void exec(String name, List<Integer> code, BlockingDeque<Integer> input, BlockingDeque<Integer> output) {
+      var ip = 0;
+      while (code.get(ip) != HLT) {
+        var instr = new Instr(ip, code);
+
+        switch (instr.opcode()) {
+          case ADD:
+            code.set(instr.p3(), instr.in1() + instr.in2());
+            ip += 4;
+            break;
+          case MUL:
+            code.set(instr.p3(), instr.in1() * instr.in2());
+            ip += 4;
+            break;
+          case IN:
+            try {
+              code.set(instr.p1(), input.take());
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+            ip += 2;
+            break;
+          case OUT:
+            output.add(instr.in1());
+            ip += 2;
+            break;
+          case JIT:
+            ip = instr.in1() != 0 ? instr.in2() : ip + 3;
+            break;
+          case JIF:
+            ip = instr.in1() == 0 ? instr.in2() : ip + 3;
+            break;
+          case LT:
+            code.set(instr.p3(), instr.in1() < instr.in2() ? 1 : 0);
+            ip += 4;
+            break;
+          case EQ:
+            code.set(instr.p3(), instr.in1().equals(instr.in2()) ? 1 : 0);
+            ip += 4;
+            break;
+          default:
+            throw new IllegalArgumentException("Invalid opcode " + instr.opcode() + " at ip " + ip);
+        }
+      }
     }
   }
 }
