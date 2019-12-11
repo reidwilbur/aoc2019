@@ -27,15 +27,15 @@ public class Day8 {
     var layers = imgData.size() / (width * height);
     var stride = width * height;
     for (int ofs = 0; ofs < stride; ofs++) {
-      if (ofs % width == 0) {
-        System.out.println();
-      }
       for (int layer = 0; layer < layers; layer++) {
         var layerPixel = imgData.get((layer * stride) + ofs);
         if (layerPixel != '2') {
           System.out.print(layerPixel == '1' ? '█' : ' ');
           break;
         }
+      }
+      if ((ofs + 1) % width == 0) {
+        System.out.println();
       }
     }
   }

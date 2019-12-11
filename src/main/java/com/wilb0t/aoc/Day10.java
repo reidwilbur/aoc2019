@@ -99,7 +99,7 @@ public class Day10 {
             .sorted(Comparator.comparing(Day10::getAngle))
             .collect(Collectors.toList());
 
-    System.out.println(keys);
+    //System.out.println(keys);
     Asteroid destroyed = null;
     for (int idx = 0; idx < count; idx++) {
       var key = keys.get(idx % keys.size());
@@ -114,6 +114,6 @@ public class Day10 {
     if (angle < 0) {
       angle = angle + (Math.PI * 2);
     }
-    return angle * 180 / Math.PI;
+    return angle;
   }
 }
