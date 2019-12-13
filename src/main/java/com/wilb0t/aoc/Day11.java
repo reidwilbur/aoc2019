@@ -95,10 +95,10 @@ public class Day11 {
       BlockingDeque<Long> compOut
   ) {
     var loc = new LocationBuilder().x(0L).y(0L).build();
-    compIn.add(mem.getOrDefault(loc, 0L));
     var dir = Direction.UP;
 
     while (true) {
+      compIn.add(mem.getOrDefault(loc, 0L));
       try {
         var color = compOut.take();
         if (color == Long.MIN_VALUE) {
@@ -112,7 +112,6 @@ public class Day11 {
         }
         dir = dir.nextDir(turn);
         loc = loc.nextLoc(dir);
-        compIn.add(mem.getOrDefault(loc, 0L));
       } catch (InterruptedException e) {
         System.out.println("Could not read from output: " + e);
       }
