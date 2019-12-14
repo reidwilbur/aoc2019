@@ -66,6 +66,16 @@ public class Day13 {
     static final int WIDTH = 38;
     static final int HEIGHT = 22;
 
+    static final Color[] BLOCK_COLORS =
+        new Color[] {
+          new Color(200, 72, 72),
+          new Color(198, 108, 58),
+          new Color(180, 122, 48),
+          new Color(162, 162, 42),
+          new Color(72, 160, 72),
+          new Color(66, 72, 200)
+        };
+
     final BlockingDeque<Long> compOut;
     final BlockingDeque<Long> compIn;
     final Map<Map.Entry<Long, Long>, Long> tiles;
@@ -152,17 +162,17 @@ public class Day13 {
     }
 
     void drawBlock(Graphics g, int x, int y) {
-      g.setColor(Color.WHITE);
+      g.setColor(getBlockColor(y));
       g.fillRect(TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, TILE_SIZE);
     }
 
     void drawPaddle(Graphics g, int x, int y) {
-      g.setColor(Color.BLUE);
+      g.setColor(new Color(200, 72, 72));
       g.fillRect(TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, TILE_SIZE);
     }
 
     void drawBall(Graphics g, int x, int y) {
-      g.setColor(Color.YELLOW);
+      g.setColor(new Color(200, 72, 72));
       g.fillOval(TILE_SIZE * x, TILE_SIZE * y, TILE_SIZE, TILE_SIZE);
     }
 
@@ -170,6 +180,11 @@ public class Day13 {
       g.setColor(Color.WHITE);
       g.setFont(new Font("Impact", Font.PLAIN, 18));
       g.drawString("Score: " + score, TILE_SIZE, (TILE_SIZE * (HEIGHT)));
+    }
+
+    Color getBlockColor(int y) {
+      var idx = ((((100 * (y - 2)) / 11) * (11 - BLOCK_COLORS.length)) / 100) % BLOCK_COLORS.length;
+      return BLOCK_COLORS[idx];
     }
   }
 
