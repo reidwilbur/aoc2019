@@ -24,37 +24,41 @@ public class Day16 {
   }
 
   static int[] fft(int[] input, int inputRepeats, int phases) {
+    // each phase calculation is a matrix multiply like the example below
+    // [ 1  0 -1  0  1  0 -1  0 ]   [ 1 ]
+    // [ 0  1  1  0  0 -1 -1  0 ]   [ 2 ]
+    // [ 0  0  1  1  1  0  0  0 ]   [ 3 ]
+    // [ 0  0  0  1  1  1  1  0 ] * [ 4 ]
+    // [ 0  0  0  0  1  1  1  1 ]   [ 5 ]
+    // [ 0  0  0  0  0  1  1  1 ]   [ 6 ]
+    // [ 0  0  0  0  0  0  1  1 ]   [ 7 ]
+    // [ 0  0  0  0  0  0  0  1 ]   [ 8 ]
+    // for the second half of the signal, each digit can be calculated
+    // using just the digit and the digit to the right, with the last digit
+    // just being the value as supplied in the signal
+    // the offset specified for this problem points in the last 10%
+    // of the txformed signal, so can accelerate by only calculating
+    // from the end of the replicated signal to the offset for each phase
+    // the final result will be in the head of the final array result
+    // this puzzle is mostly based on lucky observation of calculation and is
+    // kindof a gotcha riddle and is dumb
     var size = input.length * inputRepeats;
-    var offset = input[6];
+    var skip = input[6];
     for (int idx = 5; idx >= 0; idx--) {
       var digit = 1;
       for (int pidx = 0; pidx < 6 - idx; pidx++) {
         digit *= 10;
       }
-      offset += input[idx] * digit;
+      skip += input[idx] * digit;
     }
-    System.out.println("Size " + size);
-    System.out.println("Offset " + offset);
-    System.out.println("Work " + Arrays.toString(Arrays.copyOfRange(input, 0, 8)));
-    offset = offset % size;
-    System.out.println("Offset " + offset);
-    int[] work = new int[size - offset + 1];
-    System.out.println("Work size " + work.length);
+    int[] work = new int[size - skip];
     for (int idx = 0; idx < work.length; idx++) {
-      work[idx] = input[(idx + offset - 1) % input.length];
+      work[idx] = input[(idx + skip) % input.length];
     }
-    System.out.println("Start calc");
     for (int phase = 1; phase <= phases; phase++) {
-      for (int pos = offset - 1; pos < size; pos++) {
-        var val = 0;
-        for (int idx = pos; idx < size; idx++) {
-          var patVal = getPatternVal(pos + 1, idx);
-          var posVal = work[idx - pos];
-          val += posVal * patVal;
-        }
-        work[pos - (offset - 1)] = Math.abs(val) % 10;
+      for (int pos = work.length - 2; pos >= 0; pos--) {
+        work[pos] = (work[pos] + work[pos + 1]) % 10;
       }
-      System.out.println("Finished phase " + phase);
     }
 
     return Arrays.copyOfRange(work, 0, 8);
