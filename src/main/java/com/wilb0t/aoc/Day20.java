@@ -27,9 +27,15 @@ public class Day20 {
     int x();
 
     int y();
+    
+    int l();
 
     static Pos of(int x, int y) {
-      return new PosBuilder().x(x).y(y).build();
+      return new PosBuilder().x(x).y(y).l(0).build();
+    }
+    
+    static Pos of(int x, int y, int l) {
+      return new PosBuilder().x(x).y(y).l(l).build();
     }
 
     default Optional<Character> tile(List<String> map) {
@@ -58,6 +64,28 @@ public class Day20 {
     String name();
 
     Set<Pos> pstns();
+    
+    default Pos innerPos(Pos maxPos) {
+      var leftX = 1;
+      var rightX = maxPos.x() - 1;
+      var topY = 1;
+      var botY = maxPos.y() - 1;
+      
+      return pstns().stream()
+          .filter(p -> p.x() > leftX && p.x() < rightX && p.y() > topY && p.y() < botY)
+          .findFirst().get();
+    }
+    
+    default Pos outterPos(Pos maxPos) {
+      var leftX = 1;
+      var rightX = maxPos.x() - 1;
+      var topY = 1;
+      var botY = maxPos.y() - 1;
+
+      return pstns().stream()
+          .filter(p -> p.x() == leftX || p.x() == rightX || p.y() == topY || p.y() == botY)
+          .findFirst().get();
+    }
 
     static boolean isPortalTile(Pos p, List<String> map) {
       return p.tile(map)
@@ -170,6 +198,81 @@ public class Day20 {
     
     return -1;
   }
+
+  // all the code in this class is trash...
+  static int getDist2(String start, String end, List<String> map) {
+    var portals = Portal.getPortals(map);
+    var posToPortal = portals.stream()
+        .flatMap(p -> p.pstns().stream().map(pos -> new AbstractMap.SimpleEntry<>(pos, p)))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    var startPortal = portals.stream().filter(p -> p.name().equals(start)).findFirst().get();
+    var endPortal = portals.stream().filter(p -> p.name().equals(end)).findFirst().get();
+
+    var visited = new HashSet<Pos>();
+    var queue = new ArrayDeque<Map.Entry<Pos, Integer>>();
+    queue.addAll(
+        startPortal.pstns().stream()
+            .map(pos -> new AbstractMap.SimpleEntry<>(pos, -1))
+            .collect(Collectors.toList()));
+    while (!queue.isEmpty()) {
+      var entry = queue.pop();
+      var pos = entry.getKey();
+      //display(pos, visited, map);
+      visited.add(pos);
+      var dist = entry.getValue();
+      var nps = EnumSet.allOf(Dir.class).stream()
+          .map(pos::next)
+          .filter(npos -> validStep(npos, portals, map))
+          .filter(npos -> !visited.contains(npos))
+          .collect(Collectors.toSet());
+      if (!Sets.intersection(nps, endPortal.pstns()).isEmpty()) {
+        return dist;
+      }
+//      nps = nps.stream()
+//          .flatMap(npos -> {
+//            getPortal(npos, portals, Pos.of(map.get(0).length() - 1, map.size() - 1))
+//                .stream()
+//                .flatMap(e -> Sets.difference(e.getKey().pstns(), Set.of(e.getValue())).stream())
+//                .flatMap(nnpos -> 
+//                    EnumSet.allOf(Dir.class).stream()
+//                        .map(nnpos::next)
+//                        .flatMap(nnnpos -> nnnpos.tile(map).filter(t -> t == PATH).map(t -> nnnpos).stream())
+//                )
+//          }).collect(Collectors.toSet());
+
+      nps.forEach(npos -> queue.add(new AbstractMap.SimpleEntry<>(npos, dist + 1)));
+    }
+
+    return -1;
+  }
+ 
+  static Optional<Map.Entry<Portal, Pos>> getPortal(Pos pos, Set<Portal> portals, Pos maxPos) {
+    if (pos.l() == 0) {
+      return portals.stream()
+          .map(portal -> {
+            if (Set.of("AA", "ZZ").contains(portal.name())) {
+              return (Map.Entry<Portal, Pos>) new AbstractMap.SimpleEntry<>(portal, portal.outterPos(maxPos));
+            } else {
+              return (Map.Entry<Portal, Pos>) new AbstractMap.SimpleEntry<>(portal, portal.innerPos(maxPos));
+            }
+          })
+          .filter(entry -> entry.getValue().x() == pos.x() && entry.getValue().y() == pos.y())
+          .findFirst();
+    } else {
+      return portals.stream()
+          .filter(portal -> !Set.of("AA", "ZZ").contains(portal.name()))
+          .flatMap(portal -> portal.pstns().stream().map(p -> (Map.Entry<Portal, Pos>) new AbstractMap.SimpleEntry<>(portal, pos)))
+          .filter(entry -> entry.getValue().x() == pos.x() && entry.getValue().y() == pos.y())
+          .findFirst();
+    }
+  }
+  
+  static boolean validStep(Pos pos, Set<Portal> portals, List<String> map) {
+    return pos.tile(map)
+        .map(t -> t == PATH || getPortal(pos, portals, Pos.of(map.get(0).length() - 1, map.size() - 1)).isPresent())
+        .orElse(false);
+  }
   
   static boolean validStep(Pos pos, Map<Pos, Portal> posToPortal, List<String> map) {
     return pos.tile(map)
@@ -196,23 +299,4 @@ public class Day20 {
     System.out.println();
   }
 
-//  static Map<Portal, List<Map.Entry<Portal, Integer>>> toAdjMap(List<String> map) {
-//    var portals = Portal.getPortals(map);
-//    
-//  }
-  
-//  static List<Map.Entry<Portal, Integer>> getAdj(
-//      Portal portal, 
-//      Set<Portal> portals, 
-//      List<String> map
-//  ) {
-//    var stack = new ArrayDeque<Map.Entry<Pos, Integer>>();
-//    var adj = new ArrayList<Map.Entry<Portal, Integer>>();
-//    portal.pstns().forEach(pos -> stack.add(new AbstractMap.SimpleEntry<>(pos, 0)));
-//    var others = Sets.difference(Set.of(portal), portals);
-//    while (!stack.isEmpty()) {
-//      
-//    }
-//    return adj;
-//  }
 }
