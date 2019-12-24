@@ -29,7 +29,12 @@
       <artifactId>commons-math3</artifactId>
       <version>3.6.1</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>completable-futures</artifactId>
+      <version>0.3.1</version>
+    </dependency>
+    
     <dependency>
       <groupId>io.norberg</groupId>
       <artifactId>auto-matter</artifactId>
